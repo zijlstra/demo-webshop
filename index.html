@@ -35,35 +35,8 @@
     </header>
     <main id="main-content" role="main">
       <h1 class="products-title">Products</h1>
-      <ul class="emoji-list" role="list" aria-label="Product list">
-        <li>
-          <a
-            href="product-apple.html"
-            class="emoji-box"
-            aria-label="View Apple product details"
-            >🍏</a
-          >
-          <a href="product-apple.html">Go to Apple</a>
-        </li>
-        <li>
-          <a
-            href="product-banana.html"
-            class="emoji-box"
-            aria-label="View Banana product details"
-            >🍌</a
-          >
-          <a href="product-banana.html">Go to Banana</a>
-        </li>
-        <li>
-          <a
-            href="product-lemon.html"
-            class="emoji-box"
-            aria-label="View Lemon product details"
-            >🍋</a
-          >
-          <a href="product-lemon.html">Go to Lemon</a>
-        </li>
-      </ul>
+      <div id="categoryButtons" class="category-buttons" role="group" aria-label="Product categories"></div>
+      <ul class="emoji-list" id="productList" role="list" aria-label="Product list"></ul>
     </main>
     <footer>
       <a
@@ -75,5 +48,49 @@
       </a>
     </footer>
     <script src="shop.js"></script>
+    <script>
+      function renderCategories() {
+        const categoryButtons = document.getElementById("categoryButtons");
+        const categories = getAllCategories();
+        categoryButtons.innerHTML = "";
+        categories.forEach(category => {
+          const button = document.createElement("button");
+          button.textContent = category;
+          button.className = category === getCurrentCategory() ? "category-btn active" : "category-btn";
+          button.onclick = function () {
+            setCurrentCategory(category);
+            renderCategories();
+            renderProducts();
+          };
+          categoryButtons.appendChild(button);
+        });
+      }
+
+      function renderProducts() {
+        const productList = document.getElementById("productList");
+        const currentCategory = getCurrentCategory();
+        const products = getProductsByCategory(currentCategory);
+        productList.innerHTML = "";
+        
+        Object.entries(products).forEach(([key, product]) => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <a href="product-${key}.html" class="emoji-box" aria-label="View ${product.name} product details">${product.emoji}</a>
+            <a href="product-${key}.html">Go to ${product.name}</a>
+          `;
+          productList.appendChild(li);
+        });
+      }
+
+      if (document.readyState !== "loading") {
+        renderCategories();
+        renderProducts();
+      } else {
+        document.addEventListener("DOMContentLoaded", function() {
+          renderCategories();
+          renderProducts();
+        });
+      }
+    </script>
   </body>
 </html>
