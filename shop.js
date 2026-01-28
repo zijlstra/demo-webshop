@@ -26,6 +26,30 @@ function clearBasket() {
   localStorage.removeItem("basket");
 }
 
+function getSmoothie() {
+  try {
+    const smoothie = localStorage.getItem("smoothie");
+    return smoothie === "true";
+  } catch (error) {
+    console.warn("Error getting smoothie preference:", error);
+    return false;
+  }
+}
+
+function setSmoothie(enabled) {
+  localStorage.setItem("smoothie", enabled ? "true" : "false");
+}
+
+function computeSmoothieFlavor() {
+  const basket = getBasket();
+  if (basket.length === 0) return null;
+  const fruits = basket.map(productKey => PRODUCTS[productKey]?.name).filter(Boolean);
+  const uniqueFruits = [...new Set(fruits)];
+  if (uniqueFruits.length === 0) return null;
+  if (uniqueFruits.length === 1) return uniqueFruits[0];
+  return "Blended: " + uniqueFruits.join(" + ");
+}
+
 function renderBasket() {
   const basket = getBasket();
   const basketList = document.getElementById("basketList");
@@ -45,7 +69,39 @@ function renderBasket() {
       basketList.appendChild(li);
     }
   });
+  renderSmoothieOption();
   if (cartButtonsRow) cartButtonsRow.style.display = "flex";
+}
+
+function renderSmoothieOption() {
+  const basket = getBasket();
+  let smoothieContainer = document.getElementById("smoothieContainer");
+  if (!smoothieContainer) return;
+  
+  if (basket.length === 0) {
+    smoothieContainer.style.display = "none";
+    return;
+  }
+  
+  smoothieContainer.style.display = "block";
+  const smoothieCheckbox = document.getElementById("smoothieCheckbox");
+  const smoothieFlavorDiv = document.getElementById("smoothieFlavor");
+  
+  if (smoothieCheckbox) {
+    smoothieCheckbox.checked = getSmoothie();
+  }
+  
+  if (smoothieCheckbox?.checked && smoothieFlavorDiv) {
+    const flavor = computeSmoothieFlavor();
+    if (flavor) {
+      smoothieFlavorDiv.textContent = "🥤😊 Smoothie flavour: " + flavor;
+      smoothieFlavorDiv.style.display = "block";
+    } else {
+      smoothieFlavorDiv.style.display = "none";
+    }
+  } else if (smoothieFlavorDiv) {
+    smoothieFlavorDiv.style.display = "none";
+  }
 }
 
 function renderBasketIndicator() {
@@ -78,9 +134,11 @@ const origAddToBasket = window.addToBasket;
 window.addToBasket = function (product) {
   origAddToBasket(product);
   renderBasketIndicator();
+  renderSmoothieOption();
 };
 const origClearBasket = window.clearBasket;
 window.clearBasket = function () {
   origClearBasket();
   renderBasketIndicator();
+  renderSmoothieOption();
 };
