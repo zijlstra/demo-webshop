@@ -41,6 +41,18 @@
           id="basketList"
           aria-label="Shopping basket items"
         ></ul>
+        <div id="smoothieContainer" style="display: none; margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 4px;">
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input 
+              type="checkbox" 
+              id="smoothieCheckbox" 
+              aria-label="Blend selected fruits to a smoothie"
+              onchange="setSmoothie(this.checked); renderSmoothieOption();"
+            />
+            <span>🥤😊 Blend selected fruits to a smoothie</span>
+          </label>
+          <div id="smoothieFlavor" style="display: none; margin-top: 10px; font-style: italic; color: #666;"></div>
+        </div>
         <div class="cart-buttons-row" role="group" aria-label="Basket actions">
           <button id="clearBasket" aria-label="Clear all items from basket">
             Clear Basket
