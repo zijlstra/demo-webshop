@@ -1,7 +1,9 @@
 const PRODUCTS = {
-  apple: { name: "Apple", emoji: "🍏" },
-  banana: { name: "Banana", emoji: "🍌" },
-  lemon: { name: "Lemon", emoji: "🍋" },
+  apple: { name: "Apple", emoji: "🍏", category: "Fruits" },
+  banana: { name: "Banana", emoji: "🍌", category: "Fruits" },
+  lemon: { name: "Lemon", emoji: "🍋", category: "Fruits" },
+  tomato: { name: "Tomato", emoji: "🍅", category: "Vegetables" },
+  cucumber: { name: "Cucumber", emoji: "🥒", category: "Vegetables" },
 };
 
 function getBasket() {
@@ -14,6 +16,34 @@ function getBasket() {
     console.warn("Error parsing basket from localStorage:", error);
     return [];
   }
+}
+
+function getCurrentCategory() {
+  try {
+    const category = localStorage.getItem("currentCategory");
+    return category || "Fruits";
+  } catch (error) {
+    console.warn("Error getting category:", error);
+    return "Fruits";
+  }
+}
+
+function setCurrentCategory(category) {
+  localStorage.setItem("currentCategory", category);
+}
+
+function getProductsByCategory(category) {
+  return Object.entries(PRODUCTS)
+    .filter(([_, product]) => product.category === category)
+    .reduce((acc, [key, product]) => {
+      acc[key] = product;
+      return acc;
+    }, {});
+}
+
+function getAllCategories() {
+  const categories = new Set(Object.values(PRODUCTS).map(p => p.category));
+  return Array.from(categories);
 }
 
 function addToBasket(product) {
